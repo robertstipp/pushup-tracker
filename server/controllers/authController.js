@@ -5,11 +5,21 @@ const { comparePasswords } = require('../utils/bcryptUtils')
 
 const jwt = require('jsonwebtoken')
 
+const cookieOptions = {
+  expiresIn: new Date(
+    Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+  ),
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production' ? true : false
+};
+
 const signToken = id => {
   return jwt.sign({id}, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   })
 }
+
+
 
 
 exports.signup = catchAsync (async (req, res, next) => {
@@ -22,6 +32,7 @@ exports.signup = catchAsync (async (req, res, next) => {
   })
 
   const token = signToken(newUser._id)
+  res.cookie('jwt', token, cookieOptions)
 
   if (newUser) {
     newUser.password = undefined;
@@ -50,6 +61,8 @@ exports.login = catchAsync(async (req,res,next) => {
   }
 
   const token = signToken(user._id)
+
+  res.cookie('jwt', token, cookieOptions)
   user.password = undefined
 
   res.status(200).json({

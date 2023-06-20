@@ -1,6 +1,7 @@
 const { default: mongoose } = require('mongoose')
 const AppError = require('./../utils/appError')
 
+
 const handleDatabaseError = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
