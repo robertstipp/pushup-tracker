@@ -28,6 +28,8 @@ app.get('/', (req,res)=> {
 })
 
 
+
+
 app.use('/api/v1/auth', authRoutes)
 
 module.exports = app
